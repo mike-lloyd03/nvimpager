@@ -92,6 +92,8 @@ jobs:
       uses: mtoohey31/cache-flake-attrs@v2
       with:
         key: ${{ runner.os }}-nix-${{ hashFiles('./flake.lock', './flake.nix') }}
+    - name: show nix version
+      run: nix --version
     - name: Run the test suite
       run: script -ec 'nix develop --command sh -c "nvim --version; make test"'
       env:
