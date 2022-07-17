@@ -88,6 +88,8 @@ jobs:
   nix-cached-1:
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v2
+
     - name: Cache install Nix packages
       uses: mtoohey31/cache-flake-attrs@v2
       with:
