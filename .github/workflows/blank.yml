@@ -64,18 +64,18 @@ jobs:
           - dev
     steps:
     - name: debug cache 1
-      run: find /nix
+      run: find /nix || echo oh well
     - name: Cache
       uses: actions/cache@v3
       with:
         path: /nix/store
         key: nix-store
     - name: debug cache 2
-      run: find /nix
+      run: find /nix || echo oh well
     - name: Install Nix
       uses: cachix/install-nix-action@v16
     - name: debug cache 3
-      run: find /nix
+      run: find /nix || echo oh well
     - uses: actions/checkout@v2
     - name: Run the test suite
       run: script -ec 'nix develop .\#with-neovim-versions --command sh -c "$NVIMPAGER_NVIM --version; make test"'
