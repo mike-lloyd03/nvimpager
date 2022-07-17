@@ -34,6 +34,22 @@
     neovim-packages =
       mapAttrs (_: f: f.defaultPackage.${system})
                (filterAttrs (n: _: hasPrefix "neovim-" n) inputs);
+    mkShell = with-neovim-versions: pkgs.mkShell {
+      inputsFrom = [ pkgs.nvimpager ];
+      packages = with pkgs; [
+        lua51Packages.luacov
+        git
+        tmux
+        hyperfine
+      ] ++ pkgs.lib.lists.optional with-neovim-versions
+                                   self.packages.${system}.neovim-versions;
+      shellHook = ''
+        # to find nvimpager lua code in the current dir
+        export LUA_PATH=./?.lua''${LUA_PATH:+\;}$LUA_PATH
+        # fix for different terminals in a pure shell
+        export TERM=xterm
+      '';
+    };
   in rec {
     packages = {
       nvimpager = pkgs.nvimpager;
@@ -52,21 +68,7 @@
     defaultPackage = pkgs.nvimpager;
     apps.nvimpager = flake-utils.lib.mkApp { drv = pkgs.nvimpager; };
     defaultApp = apps.nvimpager;
-    devShell = pkgs.mkShell {
-      inputsFrom = [ pkgs.nvimpager ];
-      packages = with pkgs; [
-        lua51Packages.luacov
-        git
-        tmux
-        hyperfine
-        self.packages.${system}.neovim-versions
-      ];
-      shellHook = ''
-        # to find nvimpager lua code in the current dir
-        export LUA_PATH=./?.lua''${LUA_PATH:+\;}$LUA_PATH
-        # fix for different terminals in a pure shell
-        export TERM=xterm
-      '';
-    };
+    devShell = mkShell false;
+    devShells.with-neovim-versions = mkShell true;
   }));
 }
