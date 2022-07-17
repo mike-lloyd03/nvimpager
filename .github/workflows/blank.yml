@@ -96,6 +96,8 @@ jobs:
         key: ${{ runner.os }}-nix-${{ hashFiles('./flake.lock', './flake.nix') }}
     - name: show nix version
       run: nix --version
+    - run: find /nix
+    - run: find /etc
     - run: echo experimental-features = nix-command flakes > /etc/nix/nix.conf
     - run: cat /etc/nix/nix.conf
     - name: Run the test suite
