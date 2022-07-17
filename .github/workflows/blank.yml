@@ -7,6 +7,7 @@ env:
     nix
     --extra-experimental-features nix-command
     --extra-experimental-features flakes
+  TERM: dumb
 
 jobs:
 
@@ -29,8 +30,6 @@ jobs:
       run: nvim --version
     - name: Run the test suite
       run: script -ec "make test"
-      env:
-        TERM: dumb
 
   macos:
     runs-on: macos-latest
@@ -45,8 +44,6 @@ jobs:
       run: nvim --version
     - name: Run the test suite
       run: script typescript make test BUSTED="$HOME/.luarocks/bin/busted --exclude-tags=osx_pending"
-      env:
-        TERM: dumb
 
   nix:
     runs-on: ubuntu-latest
@@ -59,8 +56,6 @@ jobs:
         flake_paths: .#devShells.x86_64-linux.with-neovim-versions
     - name: Run the test suite
       run: script -ec '$NIX develop --command sh -c "nvim --version; make test"'
-      env:
-        TERM: dumb
 
   nix-versions:
     runs-on: ubuntu-latest
@@ -81,5 +76,4 @@ jobs:
     - name: Run the test suite
       run: script -ec '$NIX develop .\#with-neovim-versions --command sh -c "$NVIMPAGER_NVIM --version; make test"'
       env:
-        TERM: dumb
         NVIMPAGER_NVIM: neovim-${{ matrix.version }}
