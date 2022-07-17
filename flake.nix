@@ -70,5 +70,6 @@
     defaultApp = apps.nvimpager;
     devShell = mkShell false;
     devShells.with-neovim-versions = mkShell true;
+    devShells.default = mkShell false;
   }));
 }
