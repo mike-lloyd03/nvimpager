@@ -52,7 +52,7 @@ jobs:
     - name: Install Nix (with caching)
       uses: mtoohey31/cache-flake-attrs@v2
       with:
-        key: ${{ runner.os }}-nix-${{ hashFiles('./flake.lock', './flake.nix') }}
+        key: ${{ runner.os }}-nix-${{ hashFiles('./flake.lock', './flake.nix') }}-1
         flake_paths: .#devShells.x86_64-linux.with-neovim-versions
     - name: Run the test suite
       run: script -ec '$NIX develop --command sh -c "nvim --version; make test"'
