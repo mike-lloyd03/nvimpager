@@ -42,61 +42,42 @@ jobs:
   #      env:
   #        TERM: dumb
   #
-  #  nix:
-  #    runs-on: ubuntu-latest
-  #    steps:
-  #    - name: Install Nix
-  #      uses: cachix/install-nix-action@v16
-  #    - uses: actions/checkout@v2
-  #    - name: Run the test suite
-  #      run: script -ec 'nix develop --command sh -c "nvim --version; make test"'
-  #      env:
-  #        TERM: dumb
-  #
-  #  nix-versions:
-  #    runs-on: ubuntu-latest
-  #    strategy:
-  #      matrix:
-  #        version:
-  #          #- "070"  # broken?
-  #          - "071"
-  #          - "072"
-  #          - dev
-  #    steps:
-  #    - name: debug cache 1
-  #      run: find /nix || echo oh well
-  #    - name: Cache
-  #      uses: actions/cache@v3
-  #      with:
-  #        path: /nix/store
-  #        key: nix-store
-  #    - name: debug cache 2
-  #      run: find /nix || echo oh well
-  #    - name: Install Nix
-  #      uses: cachix/install-nix-action@v16
-  #    - name: debug cache 3
-  #      run: find /nix || echo oh well
-  #    - uses: actions/checkout@v2
-  #    - name: Run the test suite
-  #      run: script -ec 'nix develop .\#with-neovim-versions --command sh -c "$NVIMPAGER_NVIM --version; make test"'
-  #      env:
-  #        TERM: dumb
-  #        NVIMPAGER_NVIM: neovim-${{ matrix.version }}
+    nix:
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/checkout@v2
+      - name: Install Nix (with caching)
+        uses: mtoohey31/cache-flake-attrs@v2
+        with:
+          key: ${{ runner.os }}-nix-${{ hashFiles('./flake.lock', './flake.nix') }}
+      - name: Run the test suite
+        run: script -ec '$NIX develop --command sh -c "nvim --version; make test"'
+        env:
+          TERM: dumb
 
+    nix-versions:
+      runs-on: ubuntu-latest
+      strategy:
+        matrix:
+          version:
+            #- "070"  # broken?
+            - "071"
+            - "072"
+            - dev
+      steps:
+      - uses: actions/checkout@v2
+      - name: Install Nix (with caching)
+        uses: mtoohey31/cache-flake-attrs@v2
+        with:
+          key: ${{ runner.os }}-nix-${{ hashFiles('./flake.lock', './flake.nix') }}
+      - name: Run the test suite
+        run: script -ec '$NIX develop .\#with-neovim-versions --command sh -c "$NVIMPAGER_NVIM --version; make test"'
+        env:
+          TERM: dumb
+          NVIMPAGER_NVIM: neovim-${{ matrix.version }}
 
-
-  nix-cached-1:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Cache install Nix packages
-      uses: mtoohey31/cache-flake-attrs@v2
-      with:
-        key: ${{ runner.os }}-nix-${{ hashFiles('./flake.lock', './flake.nix') }}
-    - name: show nix version
-      run: nix --version
-    - name: Run the test suite
-      run: script -ec 'nix --extra-experimental-features nix-command --extra-experimental-features flakes develop --command sh -c "nvim --version; make test"'
-      env:
-        TERM: dumb
+env:
+  NIX: >
+    nix
+    --extra-experimental-features nix-command
+    --extra-experimental-features flakes
