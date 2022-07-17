@@ -63,6 +63,11 @@ jobs:
           - "072"
           - dev
     steps:
+    - name: Cache
+      uses: actions/cache@v3
+      with:
+        path: /nix/store
+        key: nix-store
     - name: Install Nix
       uses: cachix/install-nix-action@v16
     - uses: actions/checkout@v2
