@@ -50,6 +50,7 @@ jobs:
         uses: mtoohey31/cache-flake-attrs@v2
         with:
           key: ${{ runner.os }}-nix-${{ hashFiles('./flake.lock', './flake.nix') }}
+          flake_paths: devShells.x86_64-linux.with-neovim-versions
       - name: Run the test suite
         run: script -ec '$NIX develop --command sh -c "nvim --version; make test"'
         env:
@@ -70,6 +71,7 @@ jobs:
         uses: mtoohey31/cache-flake-attrs@v2
         with:
           key: ${{ runner.os }}-nix-${{ hashFiles('./flake.lock', './flake.nix') }}
+          flake_paths: devShells.x86_64-linux.with-neovim-versions
       - name: Run the test suite
         run: script -ec '$NIX develop .\#with-neovim-versions --command sh -c "$NVIMPAGER_NVIM --version; make test"'
         env:
